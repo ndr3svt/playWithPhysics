@@ -103,7 +103,7 @@ function draw() {
 
 
     // Display the amorphous soft body
-    drawAmorphousSoftBody(amorphousSoftBody);
+    drawAmorphousSoftBody(amorphousSoftBody,2);
 
     // Draw boundaries (walls)
     fill(100);
@@ -188,32 +188,146 @@ function createAmorphousSoftBody(xx, yy, numParticles, areaRadius, radius, parti
     return amorphousBody;
 }
 
-function drawAmorphousSoftBody(amorphousBody) {
-    // Loop through all the bodies (particles) in the composite
+// function drawAmorphousSoftBody(amorphousBody) {
+//     // Loop through all the bodies (particles) in the composite
+//     let bodies = amorphousBody.bodies;
+//     let constraints = amorphousBody.constraints;
+
+
+//     // Draw particles
+//     stroke(0, 150, 255);
+//     strokeWeight(1)
+//     noFill(); // Particle color
+//     for (let body of bodies) {
+//         let pos = body.position;
+//         ellipse(pos.x, pos.y, body.circleRadius ); // Draw particle as a circle
+//     }
+
+//     // Draw constraints (connections)
+//     stroke(0, 150, 255);
+//     strokeWeight(1);
+//     beginShape()
+//     for (let constraint of constraints) {
+//         let posA = constraint.bodyA.position;
+//         let posB = constraint.bodyB.position;
+//         curveVertex(posA.x,posA.y)
+//         curveVertex(posB.x,posB.y)
+//         //line(posA.x, posA.y, posB.x, posB.y); // Draw a line connecting two particles
+//     }
+//     endShape()
+// }
+
+
+
+// a function to detect the points inside a cluster and the points surrounding
+
+function getConvexHull(points) {
+    // Sort points by x-coordinate (and by y-coordinate as a tiebreaker)
+    points.sort((a, b) => a.x === b.x ? a.y - b.y : a.x - b.x);
+
+    let hull = [];
+
+    // Build lower hull
+    for (let p of points) {
+        while (hull.length >= 2 && crossProduct(hull[hull.length - 2], hull[hull.length - 1], p) <= 0) {
+            hull.pop();
+        }
+        hull.push(p);
+    }
+
+    // Build upper hull
+    const lowerHullSize = hull.length;
+    for (let i = points.length - 2; i >= 0; i--) {
+        while (hull.length > lowerHullSize && crossProduct(hull[hull.length - 2], hull[hull.length - 1], points[i]) <= 0) {
+            hull.pop();
+        }
+        hull.push(points[i]);
+    }
+
+    hull.pop(); // Remove duplicate last point
+    return hull;
+}
+
+// needed for the ConvexHull Calculation
+function crossProduct(a, b, c) {
+    return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+}
+
+
+// modified amorphous soft body
+function drawAmorphousSoftBody(amorphousBody,numSegments = 10) {
     let bodies = amorphousBody.bodies;
     let constraints = amorphousBody.constraints;
+    // Extract particle positions
+    let points = bodies.map(body => body.position);
+
+    // Get the convex hull of the points
+    let hull = getConvexHull(points);
 
 
-    // Draw particles
-    stroke(0, 150, 255);
-    strokeWeight(1)
-    noFill(); // Particle color
-    for (let body of bodies) {
-        let pos = body.position;
-        ellipse(pos.x, pos.y, body.circleRadius ); // Draw particle as a circle
+
+    // Draw the convex hull as a connected shape
+    stroke(255, 0, 0); // Red boundary
+    strokeWeight(2);
+    noFill();
+    beginShape();
+    // note: we are using a trick to draw the hull shape to avoid a pointy curve vertex
+    // note reference : https://forum.processing.org/one/topic/sharp-corners-in-beginshape-with-curvevertex.html
+    // Add the first two points at the beginning to improve smoothing
+    curveVertex(hull[hull.length - 2].x, hull[hull.length - 2].y);
+    curveVertex(hull[hull.length - 1].x, hull[hull.length - 1].y);
+
+    // Draw the main points of the shape
+    for (let point of hull) {
+        vertex(point.x, point.y);
     }
 
-    // Draw constraints (connections)
+    // Add the second and third points again to close the shape smoothly
+    curveVertex(hull[0].x, hull[0].y);
+    curveVertex(hull[1].x, hull[1].y);
+
+
+    // for (let point of hull) {
+    //     curveVertex(point.x, point.y);
+    // }
+    endShape();
+
+
+
+
+    // for drawing the inner connections 
+    // stroke(0, 150, 255);
+    // strokeWeight(1);
+    // beginShape()
+    // for (let constraint of constraints) {
+    //     let posA = constraint.bodyA.position;
+    //     let posB = constraint.bodyB.position;
+    //     curveVertex(posA.x,posA.y)
+    //     curveVertex(posB.x,posB.y)
+    //     //line(posA.x, posA.y, posB.x, posB.y); // Draw a line connecting two particles
+    // }
+    // endShape(CLOSE)
+    // Optionally, draw all particles (comment out if not needed)
     stroke(0, 150, 255);
     strokeWeight(1);
-    beginShape()
-    for (let constraint of constraints) {
-        let posA = constraint.bodyA.position;
-        let posB = constraint.bodyB.position;
-        curveVertex(posA.x,posA.y)
-        curveVertex(posB.x,posB.y)
-        //line(posA.x, posA.y, posB.x, posB.y); // Draw a line connecting two particles
+    for (let body of bodies) {
+        let pos = body.position;
+        ellipse(pos.x, pos.y, body.circleRadius); // Draw particle as a circle
     }
-    endShape()
 }
+
+
+
+function interpolatePoints(p1, p2, numSegments) {
+    let interpolated = [];
+    for (let i = 0; i <= numSegments; i++) {
+        let t = i / numSegments; // Linear interpolation factor (0 to 1)
+        let x = lerp(p1.x, p2.x, t);
+        let y = lerp(p1.y, p2.y, t);
+        interpolated.push({ x: x, y: y });
+    }
+    return interpolated;
+}
+
+
 
