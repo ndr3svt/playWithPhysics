@@ -188,34 +188,6 @@ function createAmorphousSoftBody(xx, yy, numParticles, areaRadius, radius, parti
     return amorphousBody;
 }
 
-// function drawAmorphousSoftBody(amorphousBody) {
-//     // Loop through all the bodies (particles) in the composite
-//     let bodies = amorphousBody.bodies;
-//     let constraints = amorphousBody.constraints;
-
-
-//     // Draw particles
-//     stroke(0, 150, 255);
-//     strokeWeight(1)
-//     noFill(); // Particle color
-//     for (let body of bodies) {
-//         let pos = body.position;
-//         ellipse(pos.x, pos.y, body.circleRadius ); // Draw particle as a circle
-//     }
-
-//     // Draw constraints (connections)
-//     stroke(0, 150, 255);
-//     strokeWeight(1);
-//     beginShape()
-//     for (let constraint of constraints) {
-//         let posA = constraint.bodyA.position;
-//         let posB = constraint.bodyB.position;
-//         curveVertex(posA.x,posA.y)
-//         curveVertex(posB.x,posB.y)
-//         //line(posA.x, posA.y, posB.x, posB.y); // Draw a line connecting two particles
-//     }
-//     endShape()
-// }
 
 
 
@@ -279,7 +251,7 @@ function drawAmorphousSoftBody(amorphousBody,numSegments = 10) {
 
     // Draw the main points of the shape
     for (let point of hull) {
-        vertex(point.x, point.y);
+        curveVertex(point.x, point.y);
     }
 
     // Add the second and third points again to close the shape smoothly
@@ -287,12 +259,8 @@ function drawAmorphousSoftBody(amorphousBody,numSegments = 10) {
     curveVertex(hull[1].x, hull[1].y);
 
 
-    // for (let point of hull) {
-    //     curveVertex(point.x, point.y);
-    // }
+
     endShape();
-
-
 
 
     // for drawing the inner connections 
