@@ -4,6 +4,8 @@
 // https://www.instagram.com/ndr3svt/
 // https://www.instagram.com/sooft.studio/
 
+// translation from softBody.js from matterjs library examples
+
 // Importing Matter.js modules
 let Engine = Matter.Engine,
     World = Matter.World,
