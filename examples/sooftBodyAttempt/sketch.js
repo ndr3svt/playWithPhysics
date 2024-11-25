@@ -1,3 +1,9 @@
+// defines all elements from matter js engine
+// written by ndr3svt from sooft.studio based on Daniel Shiffman's tutorials on matterjs
+// find more stuff like this on Instagram : 
+// https://www.instagram.com/ndr3svt/
+// https://www.instagram.com/sooft.studio/
+
 // Importing Matter.js modules
 let Engine = Matter.Engine,
     World = Matter.World,
@@ -5,23 +11,28 @@ let Engine = Matter.Engine,
     Composites = Matter.Composites,
     Mouse = Matter.Mouse,
     MouseConstraint = Matter.MouseConstraint;
+var mConstraint;
 
 let engine, world;
 let softBodies = [];
 let boundaries = [];
 let cols = 5, rows = 5;
 
+let amorphousSoftBody;
+
 function setup() {
-    createCanvas(800, 600);
+    var canvas = createCanvas(800, 600);
 
     // Create Matter.js engine
     engine = Engine.create();
     world = engine.world;
+    // Run the engine
+    Matter.Runner.run(engine);
 
     // Create soft bodies
     let particleOptions = {
-        friction: 0.05,
-        frictionStatic: 0.1,
+        friction: 0.15,
+        frictionStatic: 0.91,
         render: { visible: true }
     };
 
@@ -36,25 +47,37 @@ function setup() {
     boundaries.push(Bodies.rectangle(800, 300, 50, 600, { isStatic: true }));
     boundaries.push(Bodies.rectangle(0, 300, 50, 600, { isStatic: true }));
 
+
     // Add everything to the world
     for (let body of softBodies) World.add(world, body);
     for (let boundary of boundaries) World.add(world, boundary);
 
-    // Add mouse control
-    let canvasMouse = Mouse.create(canvas.elt);
-    canvasMouse.pixelRatio = pixelDensity();
-    let mouseConstraint = MouseConstraint.create(engine, {
-        mouse: canvasMouse,
-        constraint: { stiffness: 0.9, render: { visible: false } }
-    });
-    World.add(world, mouseConstraint);
 
-    // Run the engine
-    Matter.Runner.run(engine);
+
+    // adding an amorphous soft body
+    //let particleOptions = { friction: 0.05, frictionStatic: 0.1, render: { visible: true } };
+    amorphousSoftBody = createAmorphousSoftBody(400, 300, 10, 50, 10, particleOptions);
+    World.add(world, amorphousSoftBody);
+
+    // Add mouse control
+    var canvasmouse = Mouse.create(canvas.elt);
+    canvasmouse.pixelRatio = pixelDensity();
+    mConstraint = MouseConstraint.create(engine, {
+        mouse: canvasmouse,
+        constraint: {
+          length: 25,
+          stiffness: 0.12,
+          angularStiffness: 0,
+          render: { visible: true },
+        },
+    });
+    World.add(world, mConstraint);
+
+    
 }
 
 function draw() {
-    background(255);
+    background(0);
 
     // Draw soft bodies
     noFill();
@@ -76,6 +99,10 @@ function draw() {
         }
     }
 
+
+    // Display the amorphous soft body
+    drawAmorphousSoftBody(amorphousSoftBody);
+
     // Draw boundaries (walls)
     fill(100);
     for (let boundary of boundaries) {
@@ -92,7 +119,7 @@ function createSoftBody(xx, yy, cols, rows, colGap, rowGap, crossBrace, radius, 
 
     particleOptions = Common.extend({ inertia: Infinity }, particleOptions);
     let constraintOptions = Common.extend({
-        stiffness: 0.2,
+        stiffness: 0.02,
         render: { type: 'line', anchors: false }
     });
 
@@ -107,3 +134,84 @@ function createSoftBody(xx, yy, cols, rows, colGap, rowGap, crossBrace, radius, 
     softBody.label = 'Soft Body';
     return softBody;
 }
+
+// Helper Function : create an amorphous soft body
+
+function createAmorphousSoftBody(xx, yy, numParticles, areaRadius, radius, particleOptions) {
+    let Common = Matter.Common;
+    let Composite = Matter.Composite; // Correct reference
+    let constraintOptions = Common.extend({
+        stiffness: 0.05,
+        render: { type: 'line', anchors: false }
+    });
+
+    // Create an empty composite for the amorphous body
+    let amorphousBody = Matter.Composite.create({ label: 'Amorphous Soft Body' });
+
+    // Create particles randomly within the defined area
+    let particles = [];
+    for (let i = 0; i < numParticles; i++) {
+        let angle = random(0, TWO_PI); // Random angle
+        let distance = random(0, areaRadius*4); // Random distance within the area radius
+        let x = xx + cos(angle) * distance;
+        let y = yy + sin(angle) * distance;
+
+        let particle = Bodies.circle(x, y, radius, particleOptions);
+        particles.push(particle);
+        Composite.add(amorphousBody, particle);
+    }
+
+    // Connect particles with constraints based on proximity
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            let distance = dist(
+                particles[i].position.x,
+                particles[i].position.y,
+                particles[j].position.x,
+                particles[j].position.y
+            );
+
+            //if (distance < radius * 8) { // Connect particles within a certain range
+                let constraint = Matter.Constraint.create({
+                    bodyA: particles[i],
+                    bodyB: particles[j],
+                    stiffness: 0.05,
+                    render: { type: 'line', anchors: false }
+                });
+                Composite.add(amorphousBody, constraint);
+            //}
+        }
+    }
+
+    return amorphousBody;
+}
+
+function drawAmorphousSoftBody(amorphousBody) {
+    // Loop through all the bodies (particles) in the composite
+    let bodies = amorphousBody.bodies;
+    let constraints = amorphousBody.constraints;
+
+
+    // Draw particles
+    stroke(0, 150, 255);
+    strokeWeight(1)
+    noFill(); // Particle color
+    for (let body of bodies) {
+        let pos = body.position;
+        ellipse(pos.x, pos.y, body.circleRadius ); // Draw particle as a circle
+    }
+
+    // Draw constraints (connections)
+    stroke(0, 150, 255);
+    strokeWeight(1);
+    beginShape()
+    for (let constraint of constraints) {
+        let posA = constraint.bodyA.position;
+        let posB = constraint.bodyB.position;
+        curveVertex(posA.x,posA.y)
+        curveVertex(posB.x,posB.y)
+        //line(posA.x, posA.y, posB.x, posB.y); // Draw a line connecting two particles
+    }
+    endShape()
+}
+
