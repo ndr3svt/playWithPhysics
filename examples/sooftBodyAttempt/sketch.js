@@ -23,7 +23,7 @@ let cols = 5, rows = 5;
 let amorphousSoftBody;
 
 function setup() {
-    var canvas = createCanvas(800, 600);
+    var canvas = createCanvas(900, 900);
 
     // Create Matter.js engine
     engine = Engine.create();
@@ -44,10 +44,10 @@ function setup() {
     softBodies.push(createSoftBody(250, 400, 4, 4, 0, 0, true, 15, particleOptions));
 
     // Add boundaries (walls)
-    boundaries.push(Bodies.rectangle(400, 0, 800, 50, { isStatic: true }));
-    boundaries.push(Bodies.rectangle(400, 600, 800, 50, { isStatic: true }));
-    boundaries.push(Bodies.rectangle(800, 300, 50, 600, { isStatic: true }));
-    boundaries.push(Bodies.rectangle(0, 300, 50, 600, { isStatic: true }));
+    boundaries.push(Bodies.rectangle(450, 0, 800, 50, { isStatic: true })); // top
+    boundaries.push(Bodies.rectangle(450, 900, 800, 50, { isStatic: true })); // bottom
+    boundaries.push(Bodies.rectangle(900, 450, 50, 600, { isStatic: true }));
+    boundaries.push(Bodies.rectangle(0, 450, 50, 600, { isStatic: true }));
 
 
     // Add everything to the world
@@ -83,13 +83,13 @@ function draw() {
 
     // Draw soft bodies
     noFill();
-    stroke(0, 150, 255);
-    strokeWeight(2);
+    stroke(255);
+    strokeWeight(1);
 
     for (let softBody of softBodies) {
         for (let body of softBody.bodies) {
             let pos = body.position;
-            ellipse(pos.x, pos.y, 10, 10); // Draw each particle
+            ellipse(pos.x, pos.y, 20, 20); // Draw each particle
         }
 
         for (let constraint of softBody.constraints) {
@@ -121,7 +121,7 @@ function createSoftBody(xx, yy, cols, rows, colGap, rowGap, crossBrace, radius, 
 
     particleOptions = Common.extend({ inertia: Infinity }, particleOptions);
     let constraintOptions = Common.extend({
-        stiffness: 0.02,
+        stiffness: 0.05,
         render: { type: 'line', anchors: false }
     });
 
@@ -239,9 +239,9 @@ function drawAmorphousSoftBody(amorphousBody,numSegments = 10) {
 
 
     // Draw the convex hull as a connected shape
-    stroke(255, 0, 0); // Red boundary
-    strokeWeight(2);
-    noFill();
+    stroke(255); // Red boundary
+    strokeWeight(4);
+    fill(255,255,0,100)
     beginShape();
     // note: we are using a trick to draw the hull shape to avoid a pointy curve vertex
     // note reference : https://forum.processing.org/one/topic/sharp-corners-in-beginshape-with-curvevertex.html
@@ -264,19 +264,19 @@ function drawAmorphousSoftBody(amorphousBody,numSegments = 10) {
 
 
     // for drawing the inner connections 
-    // stroke(0, 150, 255);
-    // strokeWeight(1);
-    // beginShape()
-    // for (let constraint of constraints) {
-    //     let posA = constraint.bodyA.position;
-    //     let posB = constraint.bodyB.position;
-    //     curveVertex(posA.x,posA.y)
-    //     curveVertex(posB.x,posB.y)
-    //     //line(posA.x, posA.y, posB.x, posB.y); // Draw a line connecting two particles
-    // }
-    // endShape(CLOSE)
+    stroke(200);
+    strokeWeight(1);
+    beginShape()
+    for (let constraint of constraints) {
+        let posA = constraint.bodyA.position;
+        let posB = constraint.bodyB.position;
+        vertex(posA.x,posA.y)
+        vertex(posB.x,posB.y)
+        //line(posA.x, posA.y, posB.x, posB.y); // Draw a line connecting two particles
+    }
+    endShape()
     // Optionally, draw all particles (comment out if not needed)
-    stroke(0, 150, 255);
+    stroke(255);
     strokeWeight(1);
     for (let body of bodies) {
         let pos = body.position;
