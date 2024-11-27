@@ -47,9 +47,41 @@ function setup() {
   //     particlesf.push(particle);
   //   }
   // }
-  
-  // note that here we could connect the last radial line to close that have and have a more stable behaviour
 
+  // alternative spiral structure
+  // let centerX = width / 2;
+  // let centerY = height / 2;
+  // let angleStep = PI / 6; // Control how tightly the spiral twists
+
+  // for (let i = 0; i < rows * cols; i++) {
+  //   let radius = i * 10; // Gradually increase radius
+  //   let angle = i * angleStep; // Rotate incrementally
+  //   let px = centerX + radius * cos(angle); // Polar coordinates to Cartesian
+  //   let py = centerY + radius * sin(angle);
+  //   let particle = new Particle(px, py, false);
+  //   particlesf.push(particle);
+  // }
+
+  //radial grid with spiral twist
+  // let centerX = width / 2;
+  // let centerY = height / 2;
+
+  // for (let y = 0; y < rows; y++) {
+  //   let radius = 50 + y * 30; // Increase the radius for each row
+  //   let points = cols; // Fixed number of points per circle
+  //   let twist = y * PI / 12; // Add a slight twist for each layer
+
+  //   for (let x = 0; x < points; x++) {
+  //     let angle = map(x, 0, points, 0, TWO_PI) + twist; // Twist the angle slightly
+  //     let px = centerX + radius * cos(angle); // Polar coordinates to Cartesian
+  //     let py = centerY + radius * sin(angle);
+  //     let particle = new Particle(px, py, false);
+  //     particlesf.push(particle);
+  //   }
+  // }
+
+
+  // note that here we could connect the last radial line to close that have and have a more stable behaviour
   // main rectangular grid example
   // Create a grid of particles
   for (let y = 0; y < rows; y++) {
