@@ -47,7 +47,8 @@ function setup() {
       particlesf.push(particle);
     }
   }
-  // not that here we could connect the last radial line to close that have and have a more stable behaviour
+  
+  // note that here we could connect the last radial line to close that have and have a more stable behaviour
 
   // main rectangular grid example
   // Create a grid of particles
