@@ -32,34 +32,34 @@ function setup() {
   
   // alternative structure experiment
   // center of a radial distribution
-  let centerX = width / 2;
-  let centerY = height / 2;
+  // let centerX = width / 2;
+  // let centerY = height / 2;
 
-  for (let y = 0; y < rows; y++) {
-    let radius = 50 + y * 30; // Increase the radius for each row
-    let points = cols; // Fixed number of points per circle
+  // for (let y = 0; y < rows; y++) {
+  //   let radius = 50 + y * 30; // Increase the radius for each row
+  //   let points = cols; // Fixed number of points per circle
 
-    for (let x = 0; x < points; x++) {
-      let angle = map(x, 0, points, 0, TWO_PI); // Distribute points around the circle
-      let px = centerX + radius * cos(angle); // Polar coordinates to Cartesian
-      let py = centerY + radius * sin(angle);
-      let particle = new Particle(px, py, false);
-      particlesf.push(particle);
-    }
-  }
+  //   for (let x = 0; x < points; x++) {
+  //     let angle = map(x, 0, points, 0, TWO_PI); // Distribute points around the circle
+  //     let px = centerX + radius * cos(angle); // Polar coordinates to Cartesian
+  //     let py = centerY + radius * sin(angle);
+  //     let particle = new Particle(px, py, false);
+  //     particlesf.push(particle);
+  //   }
+  // }
   
   // note that here we could connect the last radial line to close that have and have a more stable behaviour
 
   // main rectangular grid example
   // Create a grid of particles
-  // for (let y = 0; y < rows; y++) {
-  //   //spacing+=0.15
-  //   for (let x = 0; x < cols; x++) {
-  //     //spacing+=1.75
-  //     let particle = new Particle(100 + x * spacing, 50 + y * spacing, false);
-  //     particlesf.push(particle);
-  //   }
-  // }
+  for (let y = 0; y < rows; y++) {
+    //spacing+=0.15
+    for (let x = 0; x < cols; x++) {
+      //spacing+=1.75
+      let particle = new Particle(100 + x * spacing, 50 + y * spacing, false);
+      particlesf.push(particle);
+    }
+  }
 
   // Connect particles with springs
   for (let y = 0; y < rows; y++) {
