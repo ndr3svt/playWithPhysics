@@ -7,19 +7,15 @@ const { Vec2D, Rect } = toxi.geom;
 
 let physics;
 let particlesf = [];
-let particles2 = [];
 
 let springs = [];
-let springs2 = [];
+
 
 let rows = 8;
 let cols = 4;
 let spacing = 80;
 let selectedParticle = null;
-//let letters = "S,O,O,F,T";
-//let letters = "L,A,U,R,A";
-//let letters = "P,A,B,L,O";
-//let letters = "n,u,p,d";
+
 let letters = "S,O,O,F,T";
 function setup() {
   createCanvas(900, 900);
@@ -35,12 +31,11 @@ function setup() {
 
   // Create a grid of particles
   for (let y = 0; y < rows; y++) {
+    spacing+=0.15
     for (let x = 0; x < cols; x++) {
-      let fixed = y === 0 && (x === 0 || x === cols - 1); // Fix top corners
+      spacing+=1.75
       let particle = new Particle(100 + x * spacing, 50 + y * spacing, false);
-      let particle2 = new Particle(500 + x * spacing, 50 + y * spacing, false);
       particlesf.push(particle);
-      //particles2.push(particle2)
     }
   }
 
@@ -48,27 +43,21 @@ function setup() {
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       let i = x + y * cols;
-
       // Right neighbor
       if (x < cols - 1) {
         springs.push(new Spring(particlesf[i], particlesf[i + 1]));
-        //springs2.push(new Spring(particles2[i], particles2[i + 1]));
       }
-
       // Bottom neighbor
       if (y < rows - 1) {
         springs.push(new Spring(particlesf[i], particlesf[i + cols]));
-        //springs2.push(new Spring(particles2[i], particles2[i + cols]));
       }
 
       // Diagonal neighbors
       if (x < cols - 1 && y < rows - 1) {
         springs.push(new Spring(particlesf[i], particlesf[i + cols + 1]));
-         //springs2.push(new Spring(particles2[i], particles2[i + cols + 1]));
       }
       if (x > 0 && y < rows - 1) {
         springs.push(new Spring(particlesf[i], particlesf[i + cols - 1]));
-        //springs2.push(new Spring(particles2[i], particles2[i + cols - 1]));
       }
     }
   }
@@ -87,11 +76,9 @@ function draw() {
 
   // Draw springs
   springs.forEach((spring) => spring.show());
-  springs2.forEach((spring2) => spring2.show());
 
   // Draw particles
   particlesf.forEach((particle) => particle.show());
-  particles2.forEach((particle2) => particle2.show())
 
 
 
@@ -99,8 +86,9 @@ function draw() {
   if (mouseIsPressed) {
     if (!selectedParticle) {
       // Find the nearest particle on mouse press
-      let particlesT = particlesf.concat(particles2);
-      selectedParticle = particlesT.reduce((nearest, p) => {
+      //let particlesT = particlesf.concat(particles2); // in case we would build a second body particles2 we can concatenate both to interact with the mouse
+      //  selectedParticle = particlesT.reduce((nearest, p) => { // in case two bodies particlesT instead of particlesf
+      selectedParticle = particlesf.reduce((nearest, p) => {
         let d = dist(mouseX, mouseY, p.x, p.y);
         return d < dist(mouseX, mouseY, nearest.x, nearest.y) ? p : nearest;
       }, particlesf[0]);
