@@ -19,7 +19,8 @@ let selectedParticle = null;
 //let letters = "S,O,O,F,T";
 //let letters = "L,A,U,R,A";
 //let letters = "P,A,B,L,O";
-let letters = "n,u,p,d";
+//let letters = "n,u,p,d";
+let letters = "S,O,O,F,T";
 function setup() {
   createCanvas(900, 900);
   letters = letters.split(",");
@@ -92,13 +93,7 @@ function draw() {
   particlesf.forEach((particle) => particle.show());
   particles2.forEach((particle2) => particle2.show())
 
-  // Draw the mesh as a filled shape
-  //noStroke();
-  //noFill();
-  //beginShape();
-  //particles.forEach((p) => vertex(p.x, p.y));
-  //particles2.forEach((p) => vertex(p.x, p.y));
-  //endShape(CLOSE);
+
 
   // Handle mouse interaction
   if (mouseIsPressed) {
