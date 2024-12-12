@@ -18,7 +18,7 @@ let selectedParticle = null;
 
 let letters = "S,O,O,F,T";
 function setup() {
-  createCanvas(900, 900);
+  createCanvas(800, 800);
   letters = letters.split(",");
   //console.log(letters);
   // Initialize physics
@@ -49,18 +49,18 @@ function setup() {
   // }
 
   // alternative spiral structure
-  // let centerX = width / 2;
-  // let centerY = height / 2;
-  // let angleStep = PI / 6; // Control how tightly the spiral twists
+  let centerX = width / 2;
+  let centerY = height / 2;
+  let angleStep = PI / 6; // Control how tightly the spiral twists
 
-  // for (let i = 0; i < rows * cols; i++) {
-  //   let radius = i * 10; // Gradually increase radius
-  //   let angle = i * angleStep; // Rotate incrementally
-  //   let px = centerX + radius * cos(angle); // Polar coordinates to Cartesian
-  //   let py = centerY + radius * sin(angle);
-  //   let particle = new Particle(px, py, false);
-  //   particlesf.push(particle);
-  // }
+  for (let i = 0; i < rows * cols; i++) {
+    let radius = i * 10; // Gradually increase radius
+    let angle = i * angleStep; // Rotate incrementally
+    let px = centerX + radius * cos(angle); // Polar coordinates to Cartesian
+    let py = centerY + radius * sin(angle);
+    let particle = new Particle(px, py, false);
+    particlesf.push(particle);
+  }
 
   //radial grid with spiral twist
   // let centerX = width / 2;
@@ -84,14 +84,14 @@ function setup() {
   // note that here we could connect the last radial line to close that have and have a more stable behaviour
   // main rectangular grid example
   // Create a grid of particles
-  for (let y = 0; y < rows; y++) {
-    //spacing+=0.15
-    for (let x = 0; x < cols; x++) {
-      //spacing+=1.75
-      let particle = new Particle(100 + x * spacing, 50 + y * spacing, false);
-      particlesf.push(particle);
-    }
-  }
+  // for (let y = 0; y < rows; y++) {
+  //   //spacing+=0.15
+  //   for (let x = 0; x < cols; x++) {
+  //     //spacing+=1.75
+  //     let particle = new Particle(100 + x * spacing, 50 + y * spacing, false);
+  //     particlesf.push(particle);
+  //   }
+  // }
 
   // Connect particles with springs
   for (let y = 0; y < rows; y++) {
